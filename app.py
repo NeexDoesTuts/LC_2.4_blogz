@@ -26,8 +26,12 @@ def index():
 @app.route("/blog", methods=["POST", "GET"])
 def blog():
     if request.method == "POST":
-        pass
-    
+        post_title = request.form["post-title"]
+        post_body = request.form["post-body"]
+        new_post = Post(post_title, post_body)
+        db.session.add(new_post)
+        db.session.commit()
+
     posts = Post.query.all()
 
     return render_template("blog.html", title="Blog posts", posts=posts)
