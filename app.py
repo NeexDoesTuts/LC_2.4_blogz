@@ -49,7 +49,7 @@ def blog():
 
 @app.route("/newpost", methods=["GET"])
 def new_post():
-    return render_template("new_post.html")
+    return render_template("new_post.html", title="Publish new post")
 
 if __name__ == "__main__":
     app.run()
