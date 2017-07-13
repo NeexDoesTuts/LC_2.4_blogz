@@ -1,0 +1,79 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #42459e;
+}
+
+body {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  line-height: 1.4;
+  margin: 2em 10%;
+  padding: 4em 2em 2em 2em;
+  color: #555;
+  background-color: #fff;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong {
+  color: #333;
+}
+
+p {
+  text-align: justify;
+}
+
+
+/* Links */
+
+a {
+  text-decoration: none;
+  color: #9e428a;
+  display: inline-block;
+  text-align: center;
+}
+
+a:hover {
+  text-shadow: 1px 1px 2px #42459e;
+}
+
+a:visited {
+  color: #6d429e;
+}
+
+
+
+
+/* Form CSS */
+.btn-default {
+  border: 0;
+  background: #648880;
+  padding: 11px 30px;
+  font-size: 14px;
+}
+.btn-default:hover {
+  background: #77a198;
+}
+
+input {
+  width: 100%;  
+}
+
+textarea {
+  width: 100%;
+  min-height: 16em; 
+}
+
+.form-description {
+  font-size: 1.4em;
+  font-style: bold;
+  padding-top: 0.2em;
+}
