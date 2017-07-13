@@ -1,20 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Add a new blog post</h1>
-    <form method='post'>
-        <label>
-            New Title:
-            <input type="text" name='post-title' autofocus placeholder="Post title"/>
-        </label>
-        <label>Post Body:
-            <textarea name="post-body" rows="10" cols="50" placeholder="Your blog post text"></textarea>
-        </label>
-        <input type="submit" value='Publish!' />
-    </form>
-
-    <hr />
-
     {% if posts|length == 0 %}
         <h2>No blog posts yet</h2>
     {% else %}

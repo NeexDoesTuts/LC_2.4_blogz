@@ -25,16 +25,31 @@ def index():
 
 @app.route("/blog", methods=["POST", "GET"])
 def blog():
+
+    # if I send you here via POST (newpost), please save me   
     if request.method == "POST":
         post_title = request.form["post-title"]
         post_body = request.form["post-body"]
         new_post = Post(post_title, post_body)
         db.session.add(new_post)
         db.session.commit()
+        id = new_post.id # grab id upon creation of new post
+        # and redirect here with the new id so it displays the post
+        return redirect("/blog?id={}".format(id))
 
-    posts = Post.query.all()
+    # if there is some argument in the query AKA the blog id from above redirect
+    if len(request.args) != 0:
+        id = request.args["id"] # grab the id
+        post = Post.query.get(id) # grab the post from database
+        # display only this new post on the page 
+        return render_template("blog_post.html", post=post, title=post.title)
+    else:
+        posts = Post.query.all() # otherwise grab all and display
+        return render_template("blog.html", title="All blog posts", posts=posts)
 
-    return render_template("blog.html", title="Blog posts", posts=posts)
+@app.route("/newpost", methods=["GET"])
+def new_post():
+    return render_template("new_post.html")
 
 if __name__ == "__main__":
     app.run()

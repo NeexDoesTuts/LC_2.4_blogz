@@ -1,13 +1,17 @@
 <!doctype html>
 <html>
     <head>
-        <title>{{title}}</title>
+        {% if post %}
+            <title>{{post.title}}</title>
+        {% else %}
+            <title>{{title}}</title>
+        {% endif %}        
     </head>
 <body>
 
     <nav>
-        <a href="">link one</a>
-        <a href="">link two</a>
+        <a href="/blog">All posts</a>
+        <a href="/newpost">New Post</a>
     </nav>
     {% block content %}
     {% endblock %}
