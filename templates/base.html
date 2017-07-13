@@ -9,6 +9,15 @@
         <a href="/blog">All posts</a>
         <a href="/newpost">New Post</a>
     </nav>
+
+    {% with messages = get_flashed_messages() %}
+        <ul>    
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+        </ul>    
+    {% endwith %}
+
     {% block content %}
     {% endblock %}
 

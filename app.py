@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, render_template
+from flask import Flask, redirect, request, render_template, flash
 from flask_sqlalchemy import SQLAlchemy 
 
 app = Flask(__name__)
@@ -6,6 +6,7 @@ app.config["DEBUG"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://build-a-blog:buildablog@localhost:3306/build-a-blog"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+app.secret_key = 'ctx3IlH4hZVurEio3dx9o'
 
 class Post(db.Model):
     __tablename__ = "posts"
@@ -30,12 +31,20 @@ def blog():
     if request.method == "POST":
         post_title = request.form["post-title"]
         post_body = request.form["post-body"]
-        new_post = Post(post_title, post_body)
-        db.session.add(new_post)
-        db.session.commit()
-        id = new_post.id # grab id upon creation of new post
-        # and redirect here with the new id so it displays the post
-        return redirect("/blog?id={}".format(id))
+        if not post_title:
+            flash("Please fill in blog title")
+        if not post_body:
+            flash("Please fill in post body")
+        
+        if not (post_body and post_title):
+            return redirect("/newpost")   
+        else:
+            new_post = Post(post_title, post_body)
+            db.session.add(new_post)
+            db.session.commit()
+            id = new_post.id # grab id upon creation of new post
+            # and redirect here with the new id so it displays the post
+            return redirect("/blog?id={}".format(id))
 
     # if there is some argument in the query AKA the blog id from above redirect
     if len(request.args) != 0:
