@@ -23,9 +23,14 @@ def index():
     return redirect("blog")
 
 
-@app.route("/blog")
+@app.route("/blog", methods=["POST", "GET"])
 def blog():
-    return "you are on blog route"
+    if request.method == "POST":
+        pass
+    
+    posts = Post.query.all()
+
+    return render_template("blog.html", title="Blog posts", posts=posts)
 
 if __name__ == "__main__":
     app.run()
