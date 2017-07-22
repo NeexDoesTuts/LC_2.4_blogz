@@ -5,7 +5,7 @@ from flask_debug import Debug
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://build-a-blog:buildablog@localhost:3306/build-a-blog"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://blogz:blogzishere@localhost:3306/blogz"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 app.secret_key = 'ctx3IlH4hZVurEio3dx9o'

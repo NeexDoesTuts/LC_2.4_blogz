@@ -13,23 +13,6 @@
 
 ## Project Setup
 
-Since this assignment is a continuation of *Build-a-Blog*, we'll want to use the files we created in that assignment, but we don't want to alter that repository. We want a separate repository called *Blogz*. To accomplish this, take the following steps:
-
-1. At [GitHub.com](https://github.com/), create a new repository called `blogz`. Copy the URL for the repository.
-    <aside class="aside-warning" markdown="1">
-    When creating the repository, be sure that you **do not** initialize it with a README, .gitignore, or license file. Doing so will make step 3 below more difficult.
-    </aside>
-2. In your terminal, `cd` into your `build-a-blog` repository. Make sure you are on your `master` branch and that it is up to date and contains your working solution to the last assignment.
-3. Push this to the new repository you created on GitHub using the URL you copied: `git push https://github.com/yourUSERNAME/blogz.git`.
-4. `cd` into your main development folder `LC101` (this will probably mean you just use `cd ..`).
-5. Clone the repo locally using the same URL as you used to push: `git clone https://github.com/yourUSERNAME/blogz.git`.
-
-Now you can `cd` into the `blogz` repo on your computer and start adding to and modifying it for this assignment!
-
-<aside class="aside-note" markdown="1">
-Be sure to activate your virtual environment once you `cd` into your new repo: `source activate flask-env`.
-</aside>
-
 One very important change we still need to make is to the database. We'll want to make a new database specific to this assignment, and then alter our database connection string in `main.py` so that it uses this database (and the associated user/password). So follow the instructions for [creating a new database](../../studios/flicklist/6/#create-mysql-user-and-database) using `blogz` as your user name and a password of your choice. Then change the connection string on this line of `main.py` so that it reflects this new database:
 
 ```python
