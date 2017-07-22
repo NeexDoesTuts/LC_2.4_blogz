@@ -1,6 +1,7 @@
 from flask import Flask, redirect, request, render_template, flash
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
+from flask_debug import Debug
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -8,6 +9,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://build-a-blog:buildablog
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 app.secret_key = 'ctx3IlH4hZVurEio3dx9o'
+Debug(app)
+# app.run(debug=True)
+
 
 class Post(db.Model):
     __tablename__ = "posts" # name table posts and not the SQLAlchemy standard post
