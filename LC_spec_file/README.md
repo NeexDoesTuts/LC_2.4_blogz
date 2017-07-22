@@ -11,22 +11,6 @@
 
 [TOC]
 
-## Project Setup
-
-One very important change we still need to make is to the database. We'll want to make a new database specific to this assignment, and then alter our database connection string in `main.py` so that it uses this database (and the associated user/password). So follow the instructions for [creating a new database](../../studios/flicklist/6/#create-mysql-user-and-database) using `blogz` as your user name and a password of your choice. Then change the connection string on this line of `main.py` so that it reflects this new database:
-
-```python
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:password@localhost:8889/blogz'
-```
-
-Then you'll need to initialize your new database:
-
-```nohighlight
-(flask-env) $ python
-from main import db
-db.create_all()
-```
-
 ## Overview of Improvements
 
 This is a high-level overview of the major differences between your *Build-a-Blog* app and the *Blogz* app you will create in this assignment. We will tackle one change at a time; this just serves as a quick checklist that you can review to make sure you've added the necessary changes.
@@ -43,30 +27,9 @@ This is a high-level overview of the major differences between your *Build-a-Blo
 
 ### A Note About Use Cases
 
-*Use cases* help us break down our desired functionality into smaller, testable stories. Instead of just saying that we want our app to have a login feature, we further pare down what that means into example scenarios which we can then test one at a time. For instance, in this example we might break it down into the following three use cases:
-
 1. User enters a username that is stored in the database with the correct password and is redirected to the `/newpost` page with their username being stored in a session.
 2. User enters a username that is stored in the database with an incorrect password and is redirected to the `/login` page with a message that their password is incorrect.
 3. User tries to login with a username that is not stored in the database and is redirected to the `/login` page with a message that this username does not exist.
-
-This helps us define exactly what we want our app to do. It also makes it easier to break down our work into small, testable chunks. We will be using use cases informally in this assignment to make clear exactly what your app should do in different instances. If you want to learn more about how use cases are more formally used, read this [Usability.gov article](https://www.usability.gov/how-to-and-tools/methods/use-cases.html).
-
-## Add User Class
-
-To get started, the first thing we'll want to do is add a `User` class and associated table to our app. It should have the following properties:
-
-- `id` which is an `Integer` primary key that auto-increments (just like the others you've created in class)
-- `username` which will be a `String` with a size of your choosing
-- `password` which will also be a `String` with a size of your choosing
-- `blogs` which signifies a relationship between the blog table and this user, thus binding this user with the blog posts they write.
-
-<aside class="aside-note" markdown="1">
-Feel free to reuse (with modifications) parts of the code from your *Get It Done!* app, or use [ours](https://github.com/LaunchCodeEducation/get-it-done/tree/d979a9991347431023d41abdd93891aedafc1f93) since there are many similarities between that app and this one. Just make sure to modify it so that it matches the naming and functionality suggested in the assignment instructions on this page. And note that, as we mentioned in the video lessons, storing passwords directly in the database is **NOT** a good practice. We only do so in those video lessons and in this assignment because we have not yet covered hashing, which will be the subject of Class 13.
-</aside>
-
-We'll also need to amend the `Blog` class in `main.py` (and in the database) so that it has a property called `owner_id` which is a foreign key linking the user's id to the blog post. And we'll need to amend the `Blog` constructor so that it takes in a user object (again, you can review the *Get It Done!* code for a reminder of how to do this). And think about what you'll need to do in your `/newpost` route handler function since there is a new parameter to consider when creating a blog entry.
-
-After we make these changes to our code, we'll need to drop and re-create our tables using a Python shell. If you need a reminder of this process, review the second and third bullet items [here](../../studios/flicklist/6/#modify-flicklist-to-store-movie-ratings). Make sure to `from main import db, Blog, User` at the start of your shell session.
 
 ## Add Login and Signup Pages
 
