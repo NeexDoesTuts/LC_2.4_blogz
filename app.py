@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, render_template, flash
+from flask import Flask, redirect, request, render_template, flash, session
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
 from flask_debug import Debug
@@ -81,5 +81,63 @@ def blog():
 def new_post():
     return render_template("new_post.html", title="Publish new post")
 
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        verify = request.form["verify"]
+
+        existing_user = User.query.filter_by(username=username).first()
+        if not existing_user:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session["username"] = username
+            flash("Welcome aboard! Time to write something!")
+            return redirect("/newpost")
+        else:
+            flash("User already exists!")
+            # TODO: add exact error messages later
+
+    return render_template("signup.html")
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html")
+    else:
+        username = request.form["username"]
+        password = request.form["password"]
+
+        user = User.query.filter_by(username=username).first() # user return or None
+
+        # if user exists and verified password
+        if user and user.password == password:
+            session["username"] = username
+            flash("You are logged in! The scene is yours...")
+            return redirect("/newpost")
+        else:
+            flash("Password is incorrect, or user does not exist", "error")
+
+        return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    del session["username"]
+    flash("You are logged out!")
+    return redirect("/")
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     app.run()
+
+
+
+
