@@ -4,7 +4,7 @@
     {% if posts|length == 0 %}
         <h2>No blog posts yet</h2>
     {% else %}
-        <h2>Your blog posts</h2>
+        <h2>All blog posts</h2>
         <section>
             {% for post in posts %}
             <h3><a href="/blog?id={{post.id}}">{{post.title}} - {{post.pub_date}}</a></h3>

@@ -48,7 +48,8 @@ def require_login():
 
 @app.route("/")
 def index():
-    return redirect("blog")
+    users = User.query.all()
+    return render_template("index.html", users=users)
 
 
 @app.route("/blog", methods=["POST", "GET"])
@@ -66,7 +67,9 @@ def blog():
         if not (post_body and post_title):
             return redirect("/newpost")   
         else:
-            new_post = Post(post_title, post_body)
+            owner = User.query.filter_by(username=session["username"]).first()
+
+            new_post = Post(post_title, post_body, owner)
             db.session.add(new_post)
             db.session.commit()
             id = new_post.id # grab id upon creation of new post
@@ -74,14 +77,19 @@ def blog():
             return redirect("/blog?id={}".format(id))
 
     # if there is some argument in the query AKA the blog id from above redirect
+    # or the user id
     if len(request.args) != 0:
-        id = request.args["id"] # grab the id
-        post = Post.query.get(id) # grab the post from database
-        # display only this new post on the page 
-        return render_template("blog_post.html", post=post, title=post.title)
+        user_id = request.args.get("user")
+        post_id = request.args.get("id")
+# fix for posts and users not in database
+        if user_id:
+            user_posts = Post.query.filter_by(owner_id=user_id).all()
+            return render_template("user_posts.html", user_posts=user_posts)
+        if post_id:
+            post = Post.query.get(post_id)
+            return render_template("blog_post.html", post=post, title=post.title)
     else:
         posts = Post.query.order_by(Post.pub_date.desc()).all() # otherwise grab all and display desc
-        
         return render_template("blog.html", title="All blog posts", posts=posts)
 
 @app.route("/newpost", methods=["GET"])

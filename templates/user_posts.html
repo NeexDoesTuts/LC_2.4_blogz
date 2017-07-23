@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% if user_posts|length == 0 %}
+        <h2>This person did not write anything yet</h2>
+    {% else %}
+        <section>
+            <h2>Here is everything that {{user_posts[0].owner.username}} wrote</h2> 
+            <!-- author os the first post is author of all posts -->
+            {% for post in user_posts %}
+                <h3><a href="/blog?id={{post.id}}">{{post.title}}</a></h3>
+                <p>{{post.body}}</p>
+            {% endfor %}
+        </section>
+    {% endif %}
+
+{% endblock %}
+
+
