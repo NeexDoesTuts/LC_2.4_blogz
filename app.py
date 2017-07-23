@@ -1,31 +1,55 @@
-from flask import Flask, redirect, request, render_template, flash
+from flask import Flask, redirect, request, render_template, flash, session
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
+from flask_debug import Debug
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://build-a-blog:buildablog@localhost:3306/build-a-blog"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://blogz:blogzishere@localhost:3306/blogz"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 app.secret_key = 'ctx3IlH4hZVurEio3dx9o'
+Debug(app)
+# app.run(debug=True)
+
 
 class Post(db.Model):
-    __tablename__ = "posts" # name table posts and not the SQLAlchemy standard post
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200))
     body = db.Column(db.Text)
     pub_date = db.Column(db.DateTime)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
-    def __init__(self, title, body, pub_date=None):
+    def __init__(self, title, body, owner, pub_date=None):
         self.title = title
         self.body = body
+        self.owner = owner # why is this owner and not owner_id
         if pub_date is None:
             pub_date = datetime.utcnow()
             self.pub_date = pub_date
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(60), unique=True)
+    password = db.Column(db.String(120))
+    blogs = db.relationship("Post", backref="owner")
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+
+@app.before_request
+def require_login():
+    allowed_routes = ["login", "blog", "index", "signup"] # these are names for methods and not request routes!
+    if request.endpoint not in allowed_routes and "username" not in session:
+        print(request.endpoint)
+        return redirect("/login")
+
 @app.route("/")
 def index():
-    return redirect("blog")
+    users = User.query.all()
+    return render_template("index.html", users=users)
 
 
 @app.route("/blog", methods=["POST", "GET"])
@@ -43,7 +67,9 @@ def blog():
         if not (post_body and post_title):
             return redirect("/newpost")   
         else:
-            new_post = Post(post_title, post_body)
+            owner = User.query.filter_by(username=session["username"]).first()
+
+            new_post = Post(post_title, post_body, owner)
             db.session.add(new_post)
             db.session.commit()
             id = new_post.id # grab id upon creation of new post
@@ -51,19 +77,82 @@ def blog():
             return redirect("/blog?id={}".format(id))
 
     # if there is some argument in the query AKA the blog id from above redirect
+    # or the user id
     if len(request.args) != 0:
-        id = request.args["id"] # grab the id
-        post = Post.query.get(id) # grab the post from database
-        # display only this new post on the page 
-        return render_template("blog_post.html", post=post, title=post.title)
+        user_id = request.args.get("user")
+        post_id = request.args.get("id")
+# fix for posts and users not in database
+        if user_id:
+            user_posts = Post.query.filter_by(owner_id=user_id).all()
+            return render_template("user_posts.html", user_posts=user_posts)
+        if post_id:
+            post = Post.query.get(post_id)
+            return render_template("blog_post.html", post=post, title=post.title)
     else:
         posts = Post.query.order_by(Post.pub_date.desc()).all() # otherwise grab all and display desc
-        
         return render_template("blog.html", title="All blog posts", posts=posts)
 
 @app.route("/newpost", methods=["GET"])
 def new_post():
     return render_template("new_post.html", title="Publish new post")
 
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        verify = request.form["verify"]
+
+        existing_user = User.query.filter_by(username=username).first()
+        if not existing_user:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session["username"] = username
+            flash("Welcome aboard! Time to write something!")
+            return redirect("/newpost")
+        else:
+            flash("User already exists!")
+            # TODO: add exact error messages later
+
+    return render_template("signup.html")
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html")
+    else:
+        username = request.form["username"]
+        password = request.form["password"]
+
+        user = User.query.filter_by(username=username).first() # user return or None
+
+        # if user exists and verified password
+        if user and user.password == password:
+            session["username"] = username
+            flash("You are logged in! The scene is yours...")
+            return redirect("/newpost")
+        else:
+            flash("Password is incorrect, or user does not exist", "error")
+
+        return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    del session["username"]
+    flash("You are logged out!")
+    return redirect("/")
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     app.run()
+
+
+
+
