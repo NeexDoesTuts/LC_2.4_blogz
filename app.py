@@ -43,7 +43,6 @@ class User(db.Model):
 def require_login():
     allowed_routes = ["login", "blog", "index", "signup"] # these are names for methods and not request routes!
     if request.endpoint not in allowed_routes and "username" not in session:
-        print(request.endpoint)
         return redirect("/login")
 
 @app.route("/")
@@ -120,7 +119,7 @@ def signup():
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html", title="Please login")
     else:
         username = request.form["username"]
         password = request.form["password"]
@@ -132,16 +131,18 @@ def login():
             session["username"] = username
             flash("You are logged in! The scene is yours...")
             return redirect("/newpost")
-        else:
-            flash("Password is incorrect, or user does not exist", "error")
+        elif user and user.password != password: # user exists but wrong password (otherwise nontype error)
+            flash("Password is incorrect", "error")
+        elif not user:
+            flash("No such user", "error")
 
-        return render_template("login.html")
+        return render_template("login.html", title="Please login")
 
 @app.route("/logout")
 def logout():
     del session["username"]
     flash("You are logged out!")
-    return redirect("/")
+    return redirect("/blog")
 
 
 
