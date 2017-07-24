@@ -92,7 +92,7 @@ def blog():
                 return render_template("blog_post.html", post=post, title=post.title)
             else:
                 flash("There is no blog with that id. Read sth else?")
-                return redirect("/")
+                return redirect("/blog")
     else:
         posts = Post.query.order_by(Post.pub_date.desc()).all() # otherwise grab all and display desc
         return render_template("blog.html", title="All blog posts", posts=posts)
