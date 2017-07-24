@@ -23,7 +23,8 @@ class Post(db.Model):
     def __init__(self, title, body, owner, pub_date=None):
         self.title = title
         self.body = body
-        self.owner = owner # why is this owner and not owner_id
+        self.owner = owner # why is this owner and not owner_id,
+        # passing in the entire object I think
         if pub_date is None:
             pub_date = datetime.utcnow()
             self.pub_date = pub_date
@@ -81,6 +82,7 @@ def blog():
         user_id = request.args.get("user")
         post_id = request.args.get("id")
 # fix for posts and users not in database
+        
         if user_id:
             user_posts = Post.query.filter_by(owner_id=user_id).all()
             return render_template("user_posts.html", user_posts=user_posts)
@@ -101,6 +103,30 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
         verify = request.form["verify"]
+        error = False
+
+        if password != verify:
+            flash("Passwords do not match.")
+            error = True
+        
+        if not (password or verify or username):
+            flash("Fields cannot be left empty.")
+            error = True
+
+        if len(password) < 3:
+            flash("Password has to be at least 3 characters long")
+            error = True
+
+        if len(username) < 3:
+            flash("Username has to be at least 3 characters long")                
+            error = True
+        if " " in password or " " in username:
+            flash("Spaces are not allowed.")
+            error = True
+
+        if error:
+            return render_template("signup.html")
+
 
         existing_user = User.query.filter_by(username=username).first()
         if not existing_user:
@@ -112,7 +138,6 @@ def signup():
             return redirect("/newpost")
         else:
             flash("User already exists!")
-            # TODO: add exact error messages later
 
     return render_template("signup.html")
 

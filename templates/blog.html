@@ -7,7 +7,7 @@
         <h2>All blog posts</h2>
         <section>
             {% for post in posts %}
-            <h3><a href="/blog?id={{post.id}}">{{post.title}} - {{post.pub_date}}</a></h3>
+            <h3><a href="/blog?id={{post.id}}">{{post.title}} - {{post.pub_date}} by {{post.owner.username}}</a></h3>
             <p>{{post.body}}</p>
             {% endfor %}
         </section>
