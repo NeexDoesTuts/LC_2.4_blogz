@@ -79,16 +79,20 @@ def blog():
     # if there is some argument in the query AKA the blog id from above redirect
     # or the user id
     if len(request.args) != 0:
-        user_id = request.args.get("user")
+        user_id = request.args.get("user") 
         post_id = request.args.get("id")
-# fix for posts and users not in database
+        # fix for posts and users not in database
         
         if user_id:
             user_posts = Post.query.filter_by(owner_id=user_id).all()
             return render_template("user_posts.html", user_posts=user_posts)
         if post_id:
             post = Post.query.get(post_id)
-            return render_template("blog_post.html", post=post, title=post.title)
+            if post:
+                return render_template("blog_post.html", post=post, title=post.title)
+            else:
+                flash("There is no blog with that id. Read sth else?")
+                return redirect("/")
     else:
         posts = Post.query.order_by(Post.pub_date.desc()).all() # otherwise grab all and display desc
         return render_template("blog.html", title="All blog posts", posts=posts)
