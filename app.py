@@ -19,7 +19,9 @@ class Post(db.Model):
     body = db.Column(db.Text)
     pub_date = db.Column(db.DateTime)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
+    # the owner id can be called whatever it wants, the relationship is 
+    # based off of line 21 and line 37
+    
     def __init__(self, title, body, owner, pub_date=None):
         self.title = title
         self.body = body
